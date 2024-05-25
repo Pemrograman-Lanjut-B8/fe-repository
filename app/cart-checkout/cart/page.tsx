@@ -61,6 +61,9 @@ const Page: React.FC = () => {
 
     const handleCheckout = async () => {
         console.log("Address on checkout: ", address);
+        console.log("isAddressConfirmed: ", isAddressConfirmed);
+        console.log("cartId: ", cartId);
+
         if (cartId !== null && isAddressConfirmed) {
             try {
                 const success = await checkout(cartId);
@@ -80,34 +83,40 @@ const Page: React.FC = () => {
     };
 
     return (
-        <div className="cart-page">
-            <h1>Keranjang Belanja</h1>
+        <div className="cart-page container">
+            <h1 className="page-title">Keranjang Belanja</h1>
             <div className="cart-items">
                 {cartItems.length > 0 ? (
                     cartItems.map(item => (
-                        <div key={item.bookIsbn} className="cart-item">
-                            <p>{item.bookTitle}</p>
-                            <p>Harga: Rp{item.price}</p>
-                            <p>Jumlah: {item.quantity}</p>
+                        <div key={item.bookIsbn} className="cart-item card mb-3">
+                            <div className="card-body">
+                                <h5 className="card-title">{item.bookTitle}</h5>
+                                <p className="card-text">Harga: Rp{item.price}</p>
+                                <p className="card-text">Jumlah: {item.quantity}</p>
+                            </div>
                         </div>
                     ))
                 ) : (
                     <p>Keranjang Anda kosong</p>
                 )}
             </div>
-            <div className="cart-summary">
-                <p>Total Harga: Rp{totalPrice}</p>
-                <input
-                    type="text"
-                    placeholder="Masukkan alamat pengiriman"
-                    value={address}
-                    onChange={(e) => {
-                        setAddress(e.target.value);
-                        setIsAddressConfirmed(false);
-                    }}
-                />
-                <button onClick={handleConfirmAddress}>Confirm Address</button>
-                <button onClick={handleCheckout} disabled={!isAddressConfirmed}>Checkout</button>
+            <div className="cart-summary card p-3 mt-3">
+                <h5 className="card-title">Ringkasan Keranjang</h5>
+                <p className="card-text">Total Harga: Rp{totalPrice}</p>
+                <div className="mb-3">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Masukkan alamat pengiriman"
+                        value={address}
+                        onChange={(e) => {
+                            setAddress(e.target.value);
+                            setIsAddressConfirmed(false);
+                        }}
+                    />
+                </div>
+                <button className="btn btn-primary mb-2" onClick={handleConfirmAddress}>Confirm Address</button>
+                <button className="btn btn-success" onClick={handleCheckout} disabled={!isAddressConfirmed}>Checkout</button>
             </div>
         </div>
     );

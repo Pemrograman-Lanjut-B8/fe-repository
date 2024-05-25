@@ -30,30 +30,7 @@ export const checkout = async (cartId: number): Promise<boolean> => {
     const response = await fetch(`${API_BASE_URL}/status/checkout/${cartId}`, {
         method: 'POST'
     });
-    if (!response.ok) {
-        return false;
-    }
-    return true;
-};
-
-export const pay = async (cartId: number): Promise<boolean> => {
-    const response = await fetch(`${API_BASE_URL}/status/pay/${cartId}`, {
-        method: 'POST'
-    });
-    if (!response.ok) {
-        return false;
-    }
-    return true;
-};
-
-export const cancel = async (cartId: number): Promise<boolean> => {
-    const response = await fetch(`${API_BASE_URL}/status/cancel/${cartId}`, {
-        method: 'POST'
-    });
-    if (!response.ok) {
-        return false;
-    }
-    return true;
+    return response.ok;
 };
 
 export const getCartCheckout = async (cartId: number): Promise<CartCheckoutDTO> => {
@@ -62,4 +39,18 @@ export const getCartCheckout = async (cartId: number): Promise<CartCheckoutDTO> 
         throw new Error('Failed to fetch cart checkout details');
     }
     return await response.json();
+};
+
+export const pay = async (cartId: number): Promise<boolean> => {
+    const response = await fetch(`${API_BASE_URL}/status/pay/${cartId}`, {
+        method: 'POST'
+    });
+    return response.ok;
+};
+
+export const cancel = async (cartId: number): Promise<boolean> => {
+    const response = await fetch(`${API_BASE_URL}/status/cancel/${cartId}`, {
+        method: 'POST'
+    });
+    return response.ok;
 };

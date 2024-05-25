@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { getCartCheckout, pay, cancel } from '../../../actions/cartService';
 
@@ -22,7 +22,8 @@ export interface CartCheckoutDTO {
 
 const Page: React.FC = () => {
     const router = useRouter();
-    const { cartId } = router.query; // assuming cartId is passed as a route parameter
+    const searchParams = useSearchParams();
+    const cartId = searchParams.get('cartId');
     const [cartCheckout, setCartCheckout] = useState<CartCheckoutDTO | null>(null);
     const [status, setStatus] = useState<string>('');
 
@@ -81,24 +82,27 @@ const Page: React.FC = () => {
     }
 
     return (
-        <div className="purchase-detail-page">
-            <h1>Detail Pembelian</h1>
+        <div className="purchase-detail-page container">
+            <h1 className="page-title">Detail Pembelian</h1>
             <div className="cart-items">
                 {cartCheckout.items.map(item => (
-                    <div key={item.bookIsbn} className="cart-item">
-                        <p>{item.bookTitle}</p>
-                        <p>Harga: Rp{item.price}</p>
-                        <p>Jumlah: {item.quantity}</p>
+                    <div key={item.bookIsbn} className="cart-item card mb-3">
+                        <div className="card-body">
+                            <h5 className="card-title">{item.bookTitle}</h5>
+                            <p className="card-text">Harga: Rp{item.price}</p>
+                            <p className="card-text">Jumlah: {item.quantity}</p>
+                        </div>
                     </div>
                 ))}
             </div>
-            <div className="cart-summary">
-                <p>Total Harga: Rp{cartCheckout.totalPrice}</p>
-                <p>Status: {status}</p>
+            <div className="cart-summary card p-3 mt-3">
+                <h5 className="card-title">Ringkasan Pembelian</h5>
+                <p className="card-text">Total Harga: Rp{cartCheckout.totalPrice}</p>
+                <p className="card-text">Status: {status}</p>
                 {status === 'Menunggu Konfirmasi Pembayaran' && (
                     <>
-                        <button onClick={handlePayment}>Pay</button>
-                        <button onClick={handleCancel}>Cancel</button>
+                        <button className="btn btn-success mb-2" onClick={handlePayment}>Pay</button>
+                        <button className="btn btn-danger" onClick={handleCancel}>Cancel</button>
                     </>
                 )}
             </div>
