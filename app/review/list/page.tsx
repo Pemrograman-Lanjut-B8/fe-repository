@@ -1,78 +1,97 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Navbar from '@/components/navbar/navbar';
+import Navbar from '@/components/navbar/navbar'
 import ReviewItem from '@/components/review-rating/review_rating';
-import dynamic from 'next/dynamic';
-// import { useRouter } from 'next/router'; // Import useRouter di sini
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from 'next/link';
 
-const DynamicReviewItem = dynamic(() => import('@/components/review-rating/review_rating'), { ssr: false });
+interface Review {
+    reviewId: string;
+    username: string;
+    book: {
+        judulBuku: string;
+    };
+    review: string;
+    rating: number;
+    dateTime: string;
+}
 
-const ReviewRatingPage: React.FC = () => {
-    const [reviews, setReviews] = useState<any[]>([]);
+const Reviews = () => {
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [user, setUser] = useState<string | null>(null);
+    const router = useRouter();
     const [sortedBy, setSortedBy] = useState<string>('recent');
-    // const router = useRouter(); // Gunakan useRouter di sini
 
     useEffect(() => {
         const fetchReviews = async () => {
-            try {
-                // Simulasi penundaan pengambilan data untuk meniru respons asynchronous dari server
-                const delay = () => new Promise(resolve => setTimeout(resolve, 1000));
-                await delay();
-                // Dummy data review
-                const dummyReviews = [
-                    {
-                        username: 'User1',
-                        datetime: '2024-05-24T10:00:00',
-                        title: 'The Great Gatsby',
-                        review: 'This book is amazing! Wow bagus banget keren amazing anjay saya suka saya suka ini bagus banget rekomended gan! Baca buku ini kelar dalam 10 hari, ini rekor pertama saya, waduh ini nulis review panjang sebenernya cuma buat ngetes tampilannya berhasil justify rapi gak ya? Semoga rapi please tolong rapi, halo justify! tes tes test tes tes test test test test etesttest hhehehehe ahahaha :v hahahahah bismillah kelar adpro ini tolong. Oke beberapa kalimat lagi jadi 1 2 3 4 5 6 7 8 9 10 11 12 3132 heehhe terima kasih!',
-                        rating: 9
-                    },
-                    {
-                        username: 'User2',
-                        datetime: '2024-05-25T11:00:00',
-                        title: 'To Kill a Mockingbird',
-                        review: 'One of the best books I have ever read!',
-                        rating: 10
-                    },
-                    {
-                        username: 'User3',
-                        datetime: '2024-05-26T12:00:00',
-                        title: '1984',
-                        review: 'A must-read for everyone!',
-                        rating: 8
-                    },
-                    {
-                        username: 'User4',
-                        datetime: '2024-05-27T13:00:00',
-                        title: 'The Catcher in the Rye',
-                        review: 'Enjoyed every bit of it.',
-                        rating: 7
-                    },
-                    {
-                        username: 'User5',
-                        datetime: '2024-05-28T14:00:00',
-                        title: 'Pride and Prejudice',
-                        review: 'Classic!',
-                        rating: 9
-                    }
-                ];
-                setReviews(dummyReviews);
-            } catch (error) {
-                console.error('Failed to fetch reviews:', error);
-            }
+            // Simulate API call with dummy data
+            const data: Review[] = [
+                {
+                    reviewId: "1",
+                    username: "user1",
+                    book: { judulBuku: "Book Title 1" },
+                    review: "Great book!",
+                    rating: 9,
+                    dateTime: "2024-01-01T10:00:00Z",
+                },
+                {
+                    reviewId: "2",
+                    username: "user2",
+                    book: { judulBuku: "Book Title 2" },
+                    review: "Not bad.",
+                    rating: 7,
+                    dateTime: "2024-01-02T11:00:00Z",
+                },
+                {
+                    reviewId: "3",
+                    username: "user3",
+                    book: { judulBuku: "Book Title 3" },
+                    review: "Could be better.",
+                    rating: 5,
+                    dateTime: "2024-01-03T12:00:00Z",
+                },
+                {
+                    reviewId: "4",
+                    username: "user4",
+                    book: { judulBuku: "Book Title 4" },
+                    review: "Loved it!",
+                    rating: 10,
+                    dateTime: "2024-01-04T13:00:00Z",
+                },
+                {
+                    reviewId: "5",
+                    username: "user5",
+                    book: { judulBuku: "Book Title 5" },
+                    review: "Terrible.",
+                    rating: 2,
+                    dateTime: "2024-01-05T14:00:00Z",
+                },
+            ];
+            setReviews(data);
+        };
+
+        const fetchUser = async () => {
+            const userData = localStorage.getItem("user");
+            setUser(userData);
         };
 
         fetchReviews();
+        fetchUser();
     }, []);
+
+    const deleteReview = async (id: string) => {
+        // Simulate delete API call
+        setReviews(reviews.filter((review) => review.reviewId !== id));
+    };
 
     const sortReviews = async (sortBy: string) => {
         try {
             const sortedReviews = [...reviews];
             if (sortBy === 'recent') {
-                sortedReviews.sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime());
+                sortedReviews.sort((a, b) => new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime());
             } else if (sortBy === 'oldest') {
-                sortedReviews.sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
+                sortedReviews.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
             }
             setReviews(sortedReviews);
         } catch (error) {
@@ -86,16 +105,12 @@ const ReviewRatingPage: React.FC = () => {
         await sortReviews(sortBy);
     };
 
-    // const handleEditReview = () => {
-    //     router.push('/review/edit/page.tsx'); // Navigasi ke halaman edit review
-    // };
-
     return (
         <div className="container mx-auto p-4 bg-buku-blue-000 min-h-screen">
             <Navbar />
             <div className="mt-20">
                 <h1 className="text-3xl font-semibold mb-4">Review & Rating Books</h1>
-                <p>Temukan review dari pengguna lainnya</p>
+                <p>Temukan review dari pengguna lainnya di sini!</p>
                 <div className="mt-4">
                     <label htmlFor="sort">Urutkan berdasarkan:</label>
                     <select id="sort" value={sortedBy} onChange={handleSortChange} className="ml-2 px-2 py-1 border border-gray-300 rounded-md">
@@ -103,13 +118,36 @@ const ReviewRatingPage: React.FC = () => {
                         <option value="oldest">Terlama</option>
                     </select>
                 </div>
-                <div className="reviews-container mt-8">
-                    {reviews.map((review, index) => (
-                        <DynamicReviewItem
-                            key={index}
-                            {...review}
-                            // onEdit={handleEditReview} // Teruskan fungsi handleEditReview sebagai prop
-                        />
+                <div>
+                    {reviews.map((review) => (
+                        <div key={review.reviewId} className="review-item border border-solid border-blue-900 rounded-lg overflow-hidden p-4 shadow-lg bg-white my-4">
+                            <div className="flex items-start">
+                                <div className="w-3/4 pr-4">
+                                    <p><strong>{review.username}</strong></p>
+                                    <p>{new Date(review.dateTime).toLocaleDateString()}</p>
+                                    <p><strong>Title:</strong> {review.book.judulBuku}</p>
+                                    <p><strong>Review:</strong> {review.review}</p>
+                                    <p><strong>Rating:</strong> {review.rating}/10</p>
+                                </div>
+                                {user === review.username && (
+                                    <div className="flex flex-col items-end justify-start w-1/4">
+                                        <Link href={`/review/edit/${review.reviewId}`}>
+                                            <a className="mb-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h8l4 4v8z" />
+                                                </svg>
+                                            </a>
+                                        </Link>
+                                        <button onClick={() => deleteReview(review.reviewId)}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>
@@ -117,4 +155,4 @@ const ReviewRatingPage: React.FC = () => {
     );
 };
 
-export default ReviewRatingPage;
+export default Reviews;

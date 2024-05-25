@@ -1,12 +1,12 @@
 "use client";
 
+import Navbar from '@/components/navbar/navbar';
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 
 const EditReview = () => {
     const router = useRouter();
-    const params = useParams();
-    const { id } = params;
+    const { id } = useParams();
     const [review, setReview] = useState("");
     const [rating, setRating] = useState(0);
     const [bookIsbn, setBookIsbn] = useState("");
@@ -29,8 +29,6 @@ const EditReview = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("Submitting edit..."); // Debugging
-
         const res = await fetch(`/api/review/edit/${id}`, {
             method: "PUT",
             headers: {
@@ -40,50 +38,38 @@ const EditReview = () => {
         });
 
         if (res.ok) {
-            console.log("Review edited successfully"); // Debugging
-            router.push("/reviews");
+            router.push("/review/list");
         } else {
-            console.error("Error editing review"); // Debugging
+            console.error("Error editing review");
         }
     };
 
     return (
-        <div>
-            <h1>Edit Review</h1>
-            <form onSubmit={handleSubmit}>
+        <div className="container mx-auto p-4 bg-buku-blue-000 min-h-screen">
+            <Navbar />
+            <div className="mt-20">
+                <h1 className="text-3xl font-semibold mb-4">Edit Review & Rating Books</h1>
                 <div>
-                    <label>Book ISBN:</label>
-                    <input
-                        type="text"
-                        value={bookIsbn}
-                        onChange={(e) => setBookIsbn(e.target.value)}
-                    />
+                    <form onSubmit={handleSubmit}>
+                        <div>
+                            <label>Review:</label>
+                            <textarea
+                                value={review}
+                                onChange={(e) => setReview(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label>Rating:</label>
+                            <input
+                                type="number"
+                                value={rating}
+                                onChange={(e) => setRating(parseInt(e.target.value))}
+                            />
+                        </div>
+                        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 focus:outline-none">Submit</button>
+                    </form>
                 </div>
-                <div>
-                    <label>Review:</label>
-                    <textarea
-                        value={review}
-                        onChange={(e) => setReview(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label>Rating:</label>
-                    <input
-                        type="number"
-                        value={rating}
-                        onChange={(e) => setRating(parseInt(e.target.value))}
-                    />
-                </div>
-                <div>
-                    <label>Username:</label>
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                </div>
-                <button type="submit">Submit</button>
-            </form>
+            </div>
         </div>
     );
 };

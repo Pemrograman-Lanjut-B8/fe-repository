@@ -1,63 +1,68 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
 import Navbar from '@/components/navbar/navbar';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-const CreateReviewPage: React.FC = () => {
-    const [review, setReview] = useState<string>('');
-    const [rating, setRating] = useState<number>(0);
+const CreateReview = () => {
+    const [review, setReview] = useState("");
+    const [rating, setRating] = useState(0);
+    const [bookIsbn, setBookIsbn] = useState("");
+    const router = useRouter();
 
-    const handleReviewChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setReview(event.target.value);
-    };
+    useEffect(() => {
+        // Mengambil ISBN dari suatu tempat, misal dari localStorage atau dari halaman detail buku sebelumnya
+        const storedIsbn = localStorage.getItem("bookIsbn");
+        if (storedIsbn) {
+            setBookIsbn(storedIsbn);
+        } else {
+            console.error("No ISBN found");
+        }
+    }, []);
 
-    const handleRatingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let value = parseInt(event.target.value, 10);
-        if (value < 0) value = 0;
-        if (value > 10) value = 10;
-        setRating(value);
-    };
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const res = await fetch("/api/review/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ review, rating, bookIsbn, username: "currentUser" }),
+        });
 
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault();
-        // Implementasi pengiriman data ke server atau logika lainnya
-        console.log('Review:', review);
-        console.log('Rating:', rating);
+        if (res.ok) {
+            router.push("/review/list");
+        } else {
+            console.error("Error creating review");
+        }
     };
 
     return (
         <div className="container mx-auto p-4 bg-buku-blue-000 min-h-screen">
             <Navbar />
             <div className="mt-20">
-                <h1 className="text-3xl font-semibold mb-4">Create Review & Rating Book</h1>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label htmlFor="review" className="block text-gray-700 font-bold mb-2">Review:</label>
-                        <textarea
-                            id="review"
-                            value={review}
-                            onChange={handleReviewChange}
-                            className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-                            rows={4}
-                        ></textarea>
-                    </div>
-                    <div className="mb-4">
-                        <label htmlFor="rating" className="block text-gray-700 font-bold mb-2">Rating (0-10):</label>
-                        <input
-                            id="rating"
-                            type="number"
-                            value={rating}
-                            onChange={handleRatingChange}
-                            className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-                            min="0"
-                            max="10"
-                        />
-                    </div>
-                    <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 focus:outline-none">Submit</button>
-                </form>
+                <h1 className="text-3xl font-semibold mb-4">Edit Review & Rating Books</h1>
+                    <form onSubmit={handleSubmit}>
+                        <div>
+                            <label>Review:</label>
+                            <textarea
+                                value={review}
+                                onChange={(e) => setReview(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label>Rating:</label>
+                            <input
+                                type="number"
+                                value={rating}
+                                onChange={(e) => setRating(parseInt(e.target.value))}
+                            />
+                        </div>
+                        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 focus:outline-none">Submit</button>
+                    </form>
             </div>
         </div>
     );
 };
 
-export default CreateReviewPage;
+export default CreateReview;
