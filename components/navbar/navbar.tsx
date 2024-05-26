@@ -41,16 +41,23 @@ const Navbar: React.FC = () => {
         }
     };
 
+    const handleLogout = () => {
+        AuthService.logout();
+        router.push('/home');
+    };
+
     return (
         <div className="flex justify-between items-center bg-buku-blue-100 fixed top-0 left-0 right-0 px-5 py-2 h-16 z-50">
             <div className="text-buku-blue-500 font-bold text-lg">AdvProg-B8</div>
             <div className="flex gap-3">
-                <button
-                    className="text-buku-blue-500 hover:text-buku-blue-400"
-                    onClick={() => router.push("/dashboard")}
-                >
-                    Dashboard
-                </button>
+                {role === 'ROLE_ADMIN' && (
+                    <button
+                        className="text-buku-blue-500 hover:text-buku-blue-400"
+                        onClick={() => router.push("/dashboard")}
+                    >
+                        Dashboard
+                    </button>
+                )}
                 <button
                     className="text-buku-blue-500 hover:text-buku-blue-400"
                     onClick={() => router.push("/profile")}
@@ -74,6 +81,12 @@ const Navbar: React.FC = () => {
                     onClick={handleCheckout}
                 >
                     Checkout
+                </button>
+                <button
+                    className="text-buku-blue-500 hover:text-buku-blue-400"
+                    onClick={handleLogout}
+                >
+                    Logout
                 </button>
             </div>
         </div>
