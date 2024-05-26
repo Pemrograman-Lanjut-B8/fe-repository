@@ -19,6 +19,8 @@ export const addBook = async (book: Book) => {
                 'Authorization': `Bearer ${token}`,
             },
         });
+
+        console.log('response', response);
         return response.data;
     } catch (error) {
         console.error('Failed to add book:', error);
@@ -68,3 +70,24 @@ export const deleteBook = async (isbn: string) => {
         throw error;
     }
 };
+
+export const getAllUsers = async () => {
+    try {
+        const currentUser = AuthService.getCurrentUser();
+        const token = currentUser ? currentUser.token : null;
+
+        if (!token) {
+            throw new Error('No authentication token found. Please log in.');
+        }
+
+        const response = await axios.get(`${BASE_URL}/users`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error('Failed to get all users:', error);
+        throw error;
+    }
+}

@@ -7,6 +7,7 @@ import { Book } from '@/types/book';
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react';
 import AuthService from '@/app/services/auth.service';
+import { deleteBook } from '@/actions/adminApi';
 
 export default function BookDetailsPage() {
     const params = useParams()
@@ -64,12 +65,18 @@ export default function BookDetailsPage() {
     };
 
     const handleUpdate = () => {
-        // Logic for handling update
         router.push(`/admin/update/${isbn}`);
     };
 
-    const handleDelete = () => {
-        // Logic for handling delete
+    const handleDelete = async () => {
+        try {
+            await deleteBook(isbn as string);
+            alert('Book deleted successfully!');
+            router.push('/admin/dashboard');
+        } catch (error) {
+            alert('Failed to delete book.');
+            console.error(error);
+        }
     };
 
     const handleReview = () => {

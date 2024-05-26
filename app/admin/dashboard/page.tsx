@@ -7,9 +7,12 @@ import BookCard from '@/components/book-card/book_card';
 import Navbar from '@/components/navbar/navbar';
 import { useRouter } from 'next/navigation';
 import AuthService from '@/app/services/auth.service';
+import { getAllUsers } from '@/actions/adminApi';
+import { User } from '@/types/user';
 
 const Dashboard = () => {
     const [books, setBooks] = useState<Book[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter(); 
@@ -27,6 +30,21 @@ const Dashboard = () => {
         };
 
         fetchBooks();
+    }, []);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await getAllUsers();
+                setUsers(response);
+                setLoading(false);
+            } catch (error) {
+                setError('Failed to fetch users.');
+                setLoading(false);
+            }
+        };
+
+        fetchUsers();
     }, []);
 
     useEffect(() => {
@@ -66,10 +84,29 @@ const Dashboard = () => {
             >
                 Add Book
             </button>
-            <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <div className="books-container grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-8 max-h-96 overflow-y-auto">
                 {books.map(book => (
                     <BookCard key={book.isbn} book={book} />
                 ))}
+            </div>
+            <h2 className="text-3xl font-bold text-center mt-8 mb-4 lato-regular text-buku-yellow-100" style={{ textShadow: '1px 1px 2px #333', outline: '1px solid transparent' }}>All Users</h2>
+            <div className="users-container max-h-96 overflow-y-auto">
+                <table className="min-w-full bg-white">
+                    <thead className="bg-gray-800 text-white">
+                        <tr>
+                            <th className="w-1/2 px-4 py-2">Username</th>
+                            <th className="w-1/2 px-4 py-2">Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {users.map(user => (
+                            <tr key={user.email}>
+                                <td className="border px-4 py-2">{user.username}</td>
+                                <td className="border px-4 py-2">{user.email}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
