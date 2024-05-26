@@ -17,8 +17,7 @@ import {
 const TransactionsPage: React.FC = () => {
     const [transactions, setTransactions] = useState<CartCheckoutAdminDTO[]>([]);
     const [filteredTransactions, setFilteredTransactions] = useState<CartCheckoutAdminDTO[]>([]);
-    const [emailFilter, setEmailFilter] = useState('');
-    const [bookFilter, setBookFilter] = useState('');
+    const [searchFilter, setSearchFilter] = useState('');
     const router = useRouter(); // Initialize the useRouter hook
 
     useEffect(() => {
@@ -36,12 +35,10 @@ const TransactionsPage: React.FC = () => {
 
     const handleFilter = async () => {
         try {
-            if (emailFilter) {
-                const data = await fetchTransactionsByEmail(emailFilter);
-                setFilteredTransactions(data);
-            } else if (bookFilter) {
-                const data = await fetchTransactionsByBook(bookFilter);
-                setFilteredTransactions(data);
+            if (searchFilter) {
+                const emailData = await fetchTransactionsByEmail(searchFilter);
+                const bookData = await fetchTransactionsByBook(searchFilter);
+                setFilteredTransactions([...emailData, ...bookData]);
             } else {
                 setFilteredTransactions(transactions);
             }
@@ -67,9 +64,19 @@ const TransactionsPage: React.FC = () => {
 
     // Mengecek peran pengguna saat halaman dimuat
     useEffect(() => {
-        if (!AuthService.isUserAuthorized(['ROLE_ADMIN'])) {
-            router.push('/unauthorized'); // Mengarahkan pengguna yang tidak memiliki peran yang sesuai ke halaman tidak diizinkan
-        }
+        const checkUserRole = () => {
+            try {
+                const currentUser = AuthService.getCurrentUser();
+                if (!currentUser || !currentUser.roles || !currentUser.roles.includes('ROLE_ADMIN')) {
+                    alert('Anda tidak memiliki izin untuk mengakses halaman ini. Silakan login sebagai admin.');
+                    router.push('/landing-page');
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        checkUserRole();
     }, []);
 
     return (
@@ -83,16 +90,9 @@ const TransactionsPage: React.FC = () => {
                 <div className="mb-4">
                     <input
                         type="text"
-                        placeholder="Filter by email"
-                        value={emailFilter}
-                        onChange={(e) => setEmailFilter(e.target.value)}
-                        className="border p-2 mr-2"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Filter by book title"
-                        value={bookFilter}
-                        onChange={(e) => setBookFilter(e.target.value)}
+                        placeholder="Filter by email or book title"
+                        value={searchFilter}
+                        onChange={(e) => setSearchFilter(e.target.value)}
                         className="border p-2 mr-2"
                     />
                     <button onClick={handleFilter} className="bg-blue-500 text-white p-2 rounded">

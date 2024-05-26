@@ -1,18 +1,42 @@
 "use client"
 
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import AuthService from "@/app/services/auth.service";
 
 const Navbar: React.FC = () => {
-    const router = useRouter(); // Initialize the useRouter hook
+    const router = useRouter();
+    const [role, setRole] = useState<string | null>(null);
+
+    useEffect(() => {
+        const checkUserRole = () => {
+            try {
+                const currentUser = AuthService.getCurrentUser();
+                if (currentUser) {
+                    if (currentUser.roles.includes('ROLE_USER')) {
+                        setRole('ROLE_USER');
+                    } else if (currentUser.roles.includes('ROLE_ADMIN')) {
+                        setRole('ROLE_ADMIN');
+                    } else {
+                        setRole(null);
+                    }
+                } else {
+                    router.push('/login');
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        checkUserRole();
+    }, [router]);
 
     const handleCheckout = () => {
-        if (AuthService.isUserAuthorized(['ROLE_USER'])) {
+        if (role === 'ROLE_USER') {
             router.push("/cart-checkout/cart");
-        } else if (AuthService.isUserAuthorized(['ROLE_ADMIN'])) {
+        } else if (role === 'ROLE_ADMIN') {
             router.push("/admin-page/cart-checkout");
         } else {
-
             console.log("Unauthorized access");
         }
     };
@@ -23,19 +47,19 @@ const Navbar: React.FC = () => {
             <div className="flex gap-3">
                 <button
                     className="text-buku-blue-500 hover:text-buku-blue-400"
-                    onClick={() => router.push("/dashboard")} // ganti yaa
+                    onClick={() => router.push("/dashboard")}
                 >
                     Dashboard
                 </button>
                 <button
                     className="text-buku-blue-500 hover:text-buku-blue-400"
-                    onClick={() => router.push("/profile")} // ganti yaa
+                    onClick={() => router.push("/profile")}
                 >
                     Profile
                 </button>
                 <button
                     className="text-buku-blue-500 hover:text-buku-blue-400"
-                    onClick={() => router.push("/book-list")} // ganti yaa
+                    onClick={() => router.push("/book-list")}
                 >
                     Book List
                 </button>

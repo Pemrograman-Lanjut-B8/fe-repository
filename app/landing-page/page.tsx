@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Navbar from '@/components/navbar/navbar';
+import { useRouter } from 'next/navigation';
 
 interface Book {
     judul_buku: string;
@@ -13,12 +14,13 @@ interface Book {
 }
 
 const LandingPage: React.FC = () => {
-    const [books, setBooks] = useState<Book[] | null>(null); // State to store book data
+    const [books, setBooks] = useState<Book[] | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchBooks = async () => {
             try {
-                const response = await fetch('http://localhost:8090/api/book/recommendation');
+                const response = await fetch('http://34.124.134.197/api/book/recommendation');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -32,8 +34,8 @@ const LandingPage: React.FC = () => {
         fetchBooks();
     }, []);
 
-    const handleNavigation = () => {
-        console.log("Navigating to other page...");
+    const handleBookClick = (isbn: string) => {
+        router.push(`/book/${isbn}`);
     };
 
     return (
@@ -51,9 +53,9 @@ const LandingPage: React.FC = () => {
                         <p className="text-buku-blue-300">
                             BUKU.ID adalah platform daring yang dirancang untuk memudahkan Anda dalam mencari, membeli, dan menjelajahi buku-buku favorit Anda. Dengan antarmuka yang ramah pengguna dan fitur pencarian yang canggih, kami berkomitmen untuk memberikan pengalaman terbaik dalam menemukan buku yang Anda sukai.
                         </p>
-                        <button onClick={handleNavigation} className="bg-buku-yellow-100 text-buku-blue-500 px-4 py-2 mt-8 rounded hover:bg-buku-yellow-200">
+                        <p className="bg-buku-yellow-100 text-buku-blue-500 inline-block px-4 py-2 mt-8 rounded">
                             Our Top Rated Books
-                        </button>
+                        </p>
                     </div>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-8">
@@ -63,6 +65,12 @@ const LandingPage: React.FC = () => {
                             <h2 className="text-xl font-semibold text-buku-blue-500">{book.judul_buku}</h2>
                             <p className="text-buku-blue-200">{book.penulis}</p>
                             <p className="text-red-100">Rating: {book.averageRating}</p>
+                            <button
+                                onClick={() => handleBookClick(book.isbn)} // Handle click to navigate to detail page
+                                className="bg-buku-yellow-100 text-buku-blue-500 px-4 py-2 mt-4 rounded hover:bg-buku-yellow-200"
+                            >
+                                Details
+                            </button>
                         </div>
                     ))}
                 </div>

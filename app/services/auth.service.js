@@ -34,10 +34,6 @@ class AuthService {
     return JSON.parse(localStorage.getItem('user') || 'null');
   }
 
-  isUserAuthorized(roles) {
-    const user = this.getCurrentUser();
-    return user && user.roles.some(role => roles.includes(role));
-  }
 }
 
 export default new AuthService();

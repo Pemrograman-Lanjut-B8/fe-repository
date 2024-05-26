@@ -1,6 +1,5 @@
 "use server"
 
-// actions/transactionActions.ts
 export interface CartItemsDTO {
     cartId: number;
     bookIsbn: string;
@@ -19,7 +18,8 @@ export interface CartCheckoutAdminDTO {
     status: string;
 }
 
-const API_BASE_URL = 'http://localhost:8080/pembelian-pelanggan';
+
+const API_BASE_URL = 'http://34.101.227.179/pembelian-pelanggan';
 
 export const fetchTransactions = async (): Promise<CartCheckoutAdminDTO[]> => {
     const response = await fetch(`${API_BASE_URL}/list-cartcheckout`);
