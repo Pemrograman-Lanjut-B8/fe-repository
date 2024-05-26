@@ -1,7 +1,7 @@
 import axios from "axios";
 import AuthService from '@/app/services/auth.service';
 
-const BASE_URL = 'http://localhost:8081/api/test';
+const BASE_URL = 'http://34.124.134.197/api/test';
 
 export const testUserApi = async () => {
     try {

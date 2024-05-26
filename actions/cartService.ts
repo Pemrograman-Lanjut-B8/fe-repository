@@ -16,7 +16,7 @@ export interface CartCheckoutDTO {
     items: CartItemsDTO[];
 }
 
-const API_BASE_URL = 'http://localhost:8080/cart';
+const API_BASE_URL = 'http://34.124.134.197/cart';
 
 export const getCartCheckouts = async (): Promise<CartCheckoutDTO[]> => {
     const response = await fetch(`${API_BASE_URL}/list`);
