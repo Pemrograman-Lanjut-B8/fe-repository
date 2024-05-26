@@ -1,8 +1,8 @@
 "use client"
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { getCartCheckout, pay, cancel } from '../../../actions/cartService';
+import { getCartCheckout, payCart, cancelCart } from '../../../../actions/cartService';
 
 export interface CartItemsDTO {
     cartId: number;
@@ -22,16 +22,15 @@ export interface CartCheckoutDTO {
 
 const Page: React.FC = () => {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const cartId = searchParams.get('cartId');
+    const { id } = useParams();
     const [cartCheckout, setCartCheckout] = useState<CartCheckoutDTO | null>(null);
     const [status, setStatus] = useState<string>('');
 
     useEffect(() => {
         const fetchCartCheckout = async () => {
-            if (cartId) {
+            if (id) {
                 try {
-                    const checkoutDetails = await getCartCheckout(Number(cartId));
+                    const checkoutDetails = await getCartCheckout(Number(id));
                     setCartCheckout(checkoutDetails);
                     setStatus(checkoutDetails.status);
                 } catch (error) {
@@ -41,12 +40,12 @@ const Page: React.FC = () => {
         };
 
         fetchCartCheckout();
-    }, [cartId]);
+    }, [id]);
 
     const handlePayment = async () => {
-        if (cartId) {
+        if (id) {
             try {
-                const success = await pay(Number(cartId));
+                const success = await payCart(Number(id));
                 if (success) {
                     setStatus('Menunggu Pengiriman Buku');
                     alert('Payment successful!');
@@ -61,9 +60,9 @@ const Page: React.FC = () => {
     };
 
     const handleCancel = async () => {
-        if (cartId) {
+        if (id) {
             try {
-                const success = await cancel(Number(cartId));
+                const success = await cancelCart(Number(id));
                 if (success) {
                     setStatus('Pembelian Dibatalkan');
                     alert('Cancellation successful!');

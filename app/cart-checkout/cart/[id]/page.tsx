@@ -1,8 +1,8 @@
 "use client"
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { getCartItems, checkout } from '../../../actions/cartService';
+import { getCartCheckout, checkoutCart } from '../../../../actions/cartService';
 
 export interface CartItemsDTO {
     cartId: number;
@@ -21,29 +21,35 @@ export interface CartCheckoutDTO {
 }
 
 const Page: React.FC = () => {
+    const router = useRouter();
+    const { id } = useParams();
     const [cartItems, setCartItems] = useState<CartItemsDTO[]>([]);
     const [totalPrice, setTotalPrice] = useState<number>(0);
-    const [cartId, setCartId] = useState<number | null>(null);
+    const [checkoutId, setCheckoutId] = useState<number | null>(null);
     const [address, setAddress] = useState<string>('');
     const [isAddressConfirmed, setIsAddressConfirmed] = useState<boolean>(false);
-    const router = useRouter();
 
     useEffect(() => {
-        const fetchCartItems = async () => {
+        const fetchCartData = async () => {
             try {
-                const items = await getCartItems();
-                if (items.length > 0) {
-                    setCartId(items[0].cartId);
+                console.log("Fetching cart checkout details...");
+                const cartCheckout: CartCheckoutDTO = await getCartCheckout(Number(id));
+                console.log("Cart checkout details fetched:", cartCheckout);
+
+                if (cartCheckout) {
+                    setCheckoutId(cartCheckout.id);
+                    setCartItems(cartCheckout.items);
+                    setTotalPrice(cartCheckout.totalPrice);
+                } else {
+                    console.log("No checkout details found for id:", id);
                 }
-                setCartItems(items);
-                calculateTotalPrice(items);
             } catch (error) {
-                console.error('Failed to fetch cart items', error);
+                console.error('Failed to fetch cart data', error);
             }
         };
 
-        fetchCartItems();
-    }, []);
+        fetchCartData();
+    }, [id]);
 
     const calculateTotalPrice = (items: CartItemsDTO[]) => {
         const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -53,6 +59,7 @@ const Page: React.FC = () => {
     const handleConfirmAddress = () => {
         if (address.trim() !== '') {
             setIsAddressConfirmed(true);
+            console.log('Address confirmed:', address);
             alert('Address confirmed!');
         } else {
             alert('Please enter your address.');
@@ -60,16 +67,16 @@ const Page: React.FC = () => {
     };
 
     const handleCheckout = async () => {
-        console.log("Address on checkout: ", address);
-        console.log("isAddressConfirmed: ", isAddressConfirmed);
-        console.log("cartId: ", cartId);
+        console.log("Address on checkout:", address);
+        console.log("isAddressConfirmed:", isAddressConfirmed);
+        console.log("checkoutId:", checkoutId);
 
-        if (cartId !== null && isAddressConfirmed) {
+        if (checkoutId !== null && isAddressConfirmed) {
             try {
-                const success = await checkout(cartId);
+                const success = await checkoutCart(checkoutId);
                 if (success) {
-                    alert('Checkout successful!');
-                    router.push(`/payment/${cartId}`);
+                    alert('Proceed to Payment!');
+                    router.push(`/cart-checkout/payment/${checkoutId}`);
                 } else {
                     alert('Checkout failed. Please try again.');
                 }
