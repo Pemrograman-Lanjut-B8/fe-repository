@@ -1,8 +1,11 @@
-"use client";
+"use client"
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import Navbar from '@/components/navbar/navbar';
+import AuthService from "@/app/services/auth.service";
+
 import {
     CartCheckoutAdminDTO,
     fetchTransactions,
@@ -14,8 +17,8 @@ import {
 const TransactionsPage: React.FC = () => {
     const [transactions, setTransactions] = useState<CartCheckoutAdminDTO[]>([]);
     const [filteredTransactions, setFilteredTransactions] = useState<CartCheckoutAdminDTO[]>([]);
-    const [emailFilter, setEmailFilter] = useState('');
-    const [bookFilter, setBookFilter] = useState('');
+    const [searchFilter, setSearchFilter] = useState('');
+    const router = useRouter(); // Initialize the useRouter hook
 
     useEffect(() => {
         const loadTransactions = async () => {
@@ -32,12 +35,10 @@ const TransactionsPage: React.FC = () => {
 
     const handleFilter = async () => {
         try {
-            if (emailFilter) {
-                const data = await fetchTransactionsByEmail(emailFilter);
-                setFilteredTransactions(data);
-            } else if (bookFilter) {
-                const data = await fetchTransactionsByBook(bookFilter);
-                setFilteredTransactions(data);
+            if (searchFilter) {
+                const emailData = await fetchTransactionsByEmail(searchFilter);
+                const bookData = await fetchTransactionsByBook(searchFilter);
+                setFilteredTransactions([...emailData, ...bookData]);
             } else {
                 setFilteredTransactions(transactions);
             }
@@ -57,6 +58,27 @@ const TransactionsPage: React.FC = () => {
         }
     };
 
+    const navigateToDetails = (id: number) => {
+        router.push(`/transactions/${id}`); // Programmatic navigation to transaction details page
+    };
+
+    // Mengecek peran pengguna saat halaman dimuat
+    useEffect(() => {
+        const checkUserRole = () => {
+            try {
+                const currentUser = AuthService.getCurrentUser();
+                if (!currentUser || !currentUser.roles || !currentUser.roles.includes('ROLE_ADMIN')) {
+                    alert('Anda tidak memiliki izin untuk mengakses halaman ini. Silakan login sebagai admin.');
+                    router.push('/landing-page');
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        checkUserRole();
+    }, []);
+
     return (
         <div className="container mx-auto p-4 bg-gray-100 min-h-screen">
             <Navbar />
@@ -68,23 +90,21 @@ const TransactionsPage: React.FC = () => {
                 <div className="mb-4">
                     <input
                         type="text"
-                        placeholder="Filter by email"
-                        value={emailFilter}
-                        onChange={(e) => setEmailFilter(e.target.value)}
+                        placeholder="Filter by email or book title"
+                        value={searchFilter}
+                        onChange={(e) => setSearchFilter(e.target.value)}
                         className="border p-2 mr-2"
                     />
-                    <input
-                        type="text"
-                        placeholder="Filter by book title"
-                        value={bookFilter}
-                        onChange={(e) => setBookFilter(e.target.value)}
-                        className="border p-2 mr-2"
-                    />
-                    <button onClick={handleFilter} className="bg-blue-500 text-white p-2 rounded">Filter</button>
+                    <button onClick={handleFilter} className="bg-blue-500 text-white p-2 rounded">
+                        Filter
+                    </button>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    {filteredTransactions.map(transaction => (
-                        <div key={transaction.id} className="card border border-gray-200 rounded-lg p-4 shadow-lg bg-white">
+                    {filteredTransactions.map((transaction) => (
+                        <div
+                            key={transaction.id}
+                            className="card border border-gray-200 rounded-lg p-4 shadow-lg bg-white"
+                        >
                             <h2 className="text-xl font-semibold">{transaction.namaUser}</h2>
                             <p>📱{transaction.phoneNumberUser}</p>
                             <div className="mt-2">
@@ -115,6 +135,12 @@ const TransactionsPage: React.FC = () => {
                                     Set to Pengiriman Selesai
                                 </button>
                             )}
+                            <button
+                                onClick={() => navigateToDetails(transaction.id)} // Navigate to details page
+                                className="bg-blue-500 text-white p-2 rounded mt-2"
+                            >
+                                View Details
+                            </button>
                         </div>
                     ))}
                 </div>
