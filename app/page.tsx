@@ -1,5 +1,7 @@
 "use client"
 
+import Search from '../components/book-search/Search';
+import { PaginatedBooks } from '../types/book';
 import { useRouter } from 'next/navigation'; // Import useRouter hook
 import { useState, useEffect } from 'react';
 import Head from 'next/head';

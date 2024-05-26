@@ -2,7 +2,8 @@ import axios from 'axios';
 import { Book, PaginatedBooks } from '../../types/book';
 import authHeader from './auth-header';
 
-const API_URL = 'http://localhost:8082/api/book';
+const API_URL = 'http://34.124.134.197/api/book';
+// const API_URL = 'http://localhost:8081/api/book';
 
 export const searchBooks = async (judulBuku: string, penulis: string, sortBy: string, sortDirection: string, pageIndex: number): Promise<PaginatedBooks> => {
     const response = await axios.get(`${API_URL}/search`, {

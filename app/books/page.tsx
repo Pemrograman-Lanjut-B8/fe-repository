@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Search from '../../components/Search';
+import Search from '../../components/book-search/Search';
 import { PaginatedBooks, Book } from '../../types/book';
 import { searchBooks } from '../services/book.service';
 
