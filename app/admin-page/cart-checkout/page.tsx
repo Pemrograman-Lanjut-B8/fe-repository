@@ -18,7 +18,7 @@ const TransactionsPage: React.FC = () => {
     const [transactions, setTransactions] = useState<CartCheckoutAdminDTO[]>([]);
     const [filteredTransactions, setFilteredTransactions] = useState<CartCheckoutAdminDTO[]>([]);
     const [searchFilter, setSearchFilter] = useState('');
-    const router = useRouter(); // Initialize the useRouter hook
+    const router = useRouter();
 
     useEffect(() => {
         const loadTransactions = async () => {
@@ -59,10 +59,9 @@ const TransactionsPage: React.FC = () => {
     };
 
     const navigateToDetails = (id: number) => {
-        router.push(`/transactions/${id}`); // Programmatic navigation to transaction details page
+        router.push(`/transactions/${id}`);
     };
 
-    // Mengecek peran pengguna saat halaman dimuat
     useEffect(() => {
         const checkUserRole = () => {
             try {

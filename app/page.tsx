@@ -1,16 +1,14 @@
 "use client"
 
-import { useRouter } from 'next/navigation'; // Import useRouter hook
-import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import Image from 'next/image';
 import Navbar from '@/components/navbar/navbar';
-import logo from '@/public/buku.png'; // Import the logo image
+import logo from '@/public/buku.png';
 
 const Home: React.FC = () => {
-    const router = useRouter(); // Initialize useRouter hook
+    const router = useRouter();
 
-    // Function to handle button click and navigate to landing-page
     const handleButtonClick = () => {
         router.push('/landing-page');
     };
