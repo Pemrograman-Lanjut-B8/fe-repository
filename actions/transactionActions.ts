@@ -1,6 +1,5 @@
 "use server"
 
-// actions/transactionActions.ts
 export interface CartItemsDTO {
     cartId: number;
     bookIsbn: string;

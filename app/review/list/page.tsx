@@ -14,7 +14,7 @@ const Reviews = () => {
     const router = useRouter();
     const [sortedBy, setSortedBy] = useState<string>('recent');
 
-    const baseURL = 'http://localhost:8080';
+    const baseURL = 'http://34.124.134.197';
 
     useEffect(() => {
         const fetchReviews = async () => {

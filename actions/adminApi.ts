@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Book } from '@/types/book';
 import AuthService from '@/app/services/auth.service';
 
-const BASE_URL = 'http://localhost:8080/api/admin';
+const BASE_URL = 'http://34.124.134.197/api/admin';
 
 export const addBook = async (book: Book) => {
     try {

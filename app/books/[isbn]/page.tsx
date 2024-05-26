@@ -8,6 +8,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react';
 import AuthService from '@/app/services/auth.service';
 import { deleteBook } from '@/actions/adminApi';
+import {addItemToCart} from "@/actions/cartService";
 
 export default function BookDetailsPage() {
     const params = useParams()
@@ -84,8 +85,48 @@ export default function BookDetailsPage() {
         router.push(`/review/create`);
     };
 
-    const handleAddToCart = () => {
-        // Logic for handling add to cart
+    const handleAddToCart = async () => {
+        if (book) {
+            try {
+                const currentUser = AuthService.getCurrentUser();
+                if (!currentUser) {
+                    alert('Please log in to add items to your cart.');
+                    return;
+                }
+
+                if (!currentUser.roles.includes('ROLE_USER')) {
+                    alert('Only users can add items to the cart.');
+                    return;
+                }
+
+                const userId = currentUser.id;
+                const cartItem = {
+                    cartId: 0,
+                    bookIsbn: book.isbn,
+                    bookTitle: book.judulBuku,
+                    price: book.harga,
+                    quantity: 1,
+                };
+
+                const cartCheckout = {
+                    id: 0,
+                    userId: userId,
+                    totalPrice: book.harga,
+                    status: 'New',
+                    items: [cartItem],
+                };
+
+                const result = await addItemToCart(cartCheckout);
+                if (result) {
+                    alert('Book added to cart successfully!');
+                }
+            } catch (error) {
+                console.error('Error adding item to cart:', error);
+                alert('Failed to add item to cart. Please try again.');
+            }
+        } else {
+            alert('Book details not loaded. Please try again.');
+        }
     };
 
     return (

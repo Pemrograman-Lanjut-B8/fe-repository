@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { getCartCheckout, checkoutCart } from '../../../actions/cartService';
+import { getCartCheckout, checkoutCart } from '@/actions/cartService';
 
 export interface CartItemsDTO {
     cartId: number;
