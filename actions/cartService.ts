@@ -81,3 +81,11 @@ export const storeCheckedOutBooks = async (cartCheckout: CartCheckoutDTO): Promi
         throw new Error('Failed to store checked out books');
     }
 };
+
+export const getInventory = async (): Promise<CartCheckoutDTO[]> => {
+    const response = await fetch(`${API_BASE_URL}/inventory`);
+    if (!response.ok) {
+        throw new Error('Failed to fetch inventory');
+    }
+    return await response.json();
+};
