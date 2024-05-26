@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
 import { Button, Card, Modal, Form, Alert, Spinner } from "react-bootstrap";
 import UserService from "../services/user.service";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -11,6 +12,7 @@ const Profile: React.FC = () => {
   const [editableProfile, setEditableProfile] = useState<any>(null);
   const [editLoading, setEditLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
+  const router = useRouter();
 
   useEffect(() => {
     UserService.getProfile().then(
@@ -19,12 +21,16 @@ const Profile: React.FC = () => {
         setLoading(false);
       },
       error => {
-        const _profile =
-          (error.response && error.response.data) ||
-          error.message ||
-          error.toString();
-        setProfile(_profile);
-        setLoading(false);
+        if (error.response && error.response.status === 403) {
+          router.push(`/login`);
+        } else {
+          const _profile =
+            (error.response && error.response.data) ||
+            error.message ||
+            error.toString();
+          setProfile(_profile);
+          setLoading(false);
+        }
       }
     );
   }, []);
@@ -39,7 +45,6 @@ const Profile: React.FC = () => {
     setMessage("");
 
     try {
-      // Call the API to save the changes
       await UserService.updateProfile(editableProfile);
       setProfile(editableProfile);
       setShowEditModal(false);
@@ -73,7 +78,14 @@ const Profile: React.FC = () => {
         </Spinner>
       ) : (
         <Card className="p-4" style={{ width: '500px', backgroundColor: '#7FC7D9', borderColor: '#365486' }}>
-          <Card.Img variant="top" src={profile.profilePicture || "//ssl.gstatic.com/accounts/ui/avatar_2x.png"} className="mb-4" />
+          <div className="d-flex justify-content-center mb-4">
+            <Card.Img 
+              variant="top" 
+              src={profile.profilePicture || "//ssl.gstatic.com/accounts/ui/avatar_2x.png"} 
+              style={{ maxWidth: "200px", maxHeight: "200px" }} 
+              className="mb-4" 
+            />
+          </div>
           <Card.Body>
             <Card.Title style={{ color: "#0F1035" }}>{profile.username}</Card.Title>
             <Card.Text style={{ color: "#0F1035" }}>

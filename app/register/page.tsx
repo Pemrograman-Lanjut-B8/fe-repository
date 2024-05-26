@@ -1,5 +1,7 @@
 "use client";
+
 import React, { useState, ChangeEvent, FormEvent } from "react";
+import { useRouter } from 'next/navigation';
 import { Modal, Button, Form, Alert, Card } from "react-bootstrap";
 import AuthService from "../services/auth.service";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,6 +12,7 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [successful, setSuccessful] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
+  const router = useRouter();
 
   const onChangeUsername = (e: ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -32,23 +35,21 @@ const Register: React.FC = () => {
     try {
       const response = await AuthService.register(username, email, password);
       setMessage(response.data.message);
-      console.log("Registration response:", response); // Debug statement
       setSuccessful(true);
     } catch (error: any) {
-      const resMessage =
-        (error.response && error.response.data && error.response.data.message) ||
-        error.message ||
-        error.toString();
-      console.log(resMessage);
+      let errorMessage = "Registration failed. Please try again.";
+      if (error.response && error.response.data) {
+        errorMessage = error.response.data;
+      }
+      console.log(errorMessage);
       setSuccessful(false);
-      setMessage(resMessage);
+      setMessage(errorMessage);
     }
   };
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: '#DCF2F1' }}>
       <Card className="p-4" style={{ width: '400px', backgroundColor: '#7FC7D9', borderColor: '#365486' }}>
-        {/* <Card.Img variant="top" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" className="mb-4" /> */}
         <Form onSubmit={handleRegister}>
           {!successful && (
             <div>
@@ -106,8 +107,8 @@ const Register: React.FC = () => {
             {message}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="primary" onClick={() => setSuccessful(false)} style={{ backgroundColor: "#365486", borderColor: "#365486" }}>
-              Close
+            <Button variant="primary" onClick={() => router.push(`/login`)} style={{ backgroundColor: "#365486", borderColor: "#365486" }}>
+              Login
             </Button>
           </Modal.Footer>
         </Modal>
