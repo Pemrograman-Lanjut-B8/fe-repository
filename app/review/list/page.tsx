@@ -82,7 +82,7 @@ const Reviews = () => {
                 <p>Temukan review dari pengguna lainnya di sini!</p>
                 <p className="mt-2">
                     Ingin menambahkan review & rating lainnya?
-                    <Link href="/landing-page">
+                    <Link href="/books">
                         <a className="text-blue-500 underline ml-1">Cari buku!</a>
                     </Link>
                 </p>
