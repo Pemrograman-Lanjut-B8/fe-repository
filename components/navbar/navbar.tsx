@@ -1,9 +1,21 @@
 "use client"
 
-import { useRouter } from 'next/navigation'; // Import useRouter from next/router
+import { useRouter } from 'next/navigation';
+import AuthService from "@/app/services/auth.service";
 
 const Navbar: React.FC = () => {
     const router = useRouter(); // Initialize the useRouter hook
+
+    const handleCheckout = () => {
+        if (AuthService.isUserAuthorized(['ROLE_USER'])) {
+            router.push("/cart-checkout/cart");
+        } else if (AuthService.isUserAuthorized(['ROLE_ADMIN'])) {
+            router.push("/admin-page/cart-checkout");
+        } else {
+
+            console.log("Unauthorized access");
+        }
+    };
 
     return (
         <div className="flex justify-between items-center bg-buku-blue-100 fixed top-0 left-0 right-0 px-5 py-2 h-16 z-50">
@@ -11,25 +23,31 @@ const Navbar: React.FC = () => {
             <div className="flex gap-3">
                 <button
                     className="text-buku-blue-500 hover:text-buku-blue-400"
-                    onClick={() => router.push("/dashboard")} // Navigate to Dashboard
+                    onClick={() => router.push("/dashboard")} // ganti yaa
                 >
                     Dashboard
                 </button>
                 <button
                     className="text-buku-blue-500 hover:text-buku-blue-400"
-                    onClick={() => router.push("/book-list")} // Navigate to Book List
+                    onClick={() => router.push("/profile")} // ganti yaa
+                >
+                    Profile
+                </button>
+                <button
+                    className="text-buku-blue-500 hover:text-buku-blue-400"
+                    onClick={() => router.push("/book-list")} // ganti yaa
                 >
                     Book List
                 </button>
                 <button
                     className="text-buku-blue-500 hover:text-buku-blue-400"
-                    onClick={() => router.push("/review/list")} // Navigate to Search
+                    onClick={() => router.push("/review/list")}
                 >
                     Review
                 </button>
                 <button
                     className="text-buku-blue-500 hover:text-buku-blue-400"
-                    onClick={() => router.push("/checkout")} // Navigate to Checkout
+                    onClick={handleCheckout}
                 >
                     Checkout
                 </button>
