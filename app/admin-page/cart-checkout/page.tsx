@@ -64,10 +64,19 @@ const TransactionsPage: React.FC = () => {
 
     // Mengecek peran pengguna saat halaman dimuat
     useEffect(() => {
-        if (!AuthService.isUserAuthorized(['ROLE_ADMIN'])) {
-            alert('Anda tidak memiliki izin untuk mengakses halaman ini. Silakan login sebagai admin.');
-            router.push('/landing-page');
-        }
+        const checkUserRole = () => {
+            try {
+                const currentUser = AuthService.getCurrentUser();
+                if (!currentUser || !currentUser.roles || !currentUser.roles.includes('ROLE_ADMIN')) {
+                    alert('Anda tidak memiliki izin untuk mengakses halaman ini. Silakan login sebagai admin.');
+                    router.push('/landing-page');
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        checkUserRole();
     }, []);
 
     return (
