@@ -12,7 +12,7 @@ const EditReview = () => {
     const [bookIsbn, setBookIsbn] = useState<string>("");
     const [username, setUsername] = useState<string>("");
 
-    const baseURL = 'http://localhost:8080';
+    const baseURL = 'http://34.124.134.197';
 
     useEffect(() => {
         const fetchReview = async () => {
