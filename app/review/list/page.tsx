@@ -78,6 +78,17 @@ const Reviews = () => {
             <div className="mt-20">
                 <h1 className="text-3xl font-semibold mb-4">Review & Rating Books</h1>
                 <p>Temukan review dari pengguna lainnya di sini!</p>
+                <p className="mt-2">
+                    Ingin menambahkan review & rating lainnya?
+                    <Link href="/landing-page">
+                        <a className="text-blue-500 underline ml-1">Cari buku!</a>
+                    </Link>
+                </p>
+                <div className="mt-4">
+                    <Link href="/review/create">
+                        <a className="inline-block bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Create Review</a>
+                    </Link>
+                </div>
                 <div className="mt-4">
                     <label htmlFor="sort">Urutkan berdasarkan:</label>
                     <select id="sort" value={sortedBy} onChange={handleSortChange} className="ml-2 px-2 py-1 border border-gray-300 rounded-md">
