@@ -15,7 +15,6 @@ export default function BookDetailsPage() {
     const [book, setBook] = useState<Book | null>(null);
     const [userRole, setUserRole] = useState<string | null>(null);
     const router = useRouter();
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         if (isbn && typeof isbn === 'string') {
