@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import Search from '../components/Search';
+import Search from '../components/book-search/Search';
 import { PaginatedBooks } from '../types/book';
 
 const Home: React.FC = () => {

@@ -3,6 +3,7 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from 'next/navigation';
 import AuthService from "../services/auth.service";
+import Navbar from '@/components/navbar/navbar';
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -47,6 +48,7 @@ const Register: React.FC = () => {
 
   return (
     <div className="flex justify-center items-center h-screen bg-teal-100">
+      <Navbar />
       <div className="p-6 bg-teal-300 border border-blue-700 w-96 rounded-md shadow-md">
         <form onSubmit={handleRegister}>
           {!successful && (
@@ -58,7 +60,7 @@ const Register: React.FC = () => {
                   name="username"
                   value={username}
                   onChange={onChangeUsername}
-                  className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-blue-900"
+                  className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-black"
                 />
               </div>
 
@@ -69,7 +71,7 @@ const Register: React.FC = () => {
                   name="email"
                   value={email}
                   onChange={onChangeEmail}
-                  className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-blue-900"
+                  className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-black"
                 />
               </div>
 
@@ -80,7 +82,7 @@ const Register: React.FC = () => {
                   name="password"
                   value={password}
                   onChange={onChangePassword}
-                  className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-blue-900"
+                  className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-black"
                 />
               </div>
 
@@ -101,9 +103,9 @@ const Register: React.FC = () => {
         </form>
 
         {successful && (
-          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-            <div className="bg-white p-4 rounded-md shadow-md">
-              <h2 className="text-lg font-bold">Registration Successful</h2>
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 overflow-y-auto">
+            <div className="bg-white p-4 rounded-md shadow-md w-full max-w-md my-8 mx-auto">
+              <h2 className="text-black font-bold">Registration Successful</h2>
               <p className="mt-2">{message}</p>
               <button
                 className="mt-4 bg-blue-700 text-white py-2 px-4 rounded-md"
