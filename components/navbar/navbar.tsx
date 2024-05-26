@@ -43,7 +43,7 @@ const Navbar: React.FC = () => {
 
     const handleLogout = () => {
         AuthService.logout();
-        router.push('/home');
+        router.push('/');
     };
 
     return (
@@ -53,7 +53,7 @@ const Navbar: React.FC = () => {
                 {role === 'ROLE_ADMIN' && (
                     <button
                         className="text-buku-blue-500 hover:text-buku-blue-400"
-                        onClick={() => router.push("/dashboard")}
+                        onClick={() => router.push("/admin/dashboard")}
                     >
                         Dashboard
                     </button>
@@ -66,7 +66,7 @@ const Navbar: React.FC = () => {
                 </button>
                 <button
                     className="text-buku-blue-500 hover:text-buku-blue-400"
-                    onClick={() => router.push("/book-list")}
+                    onClick={() => router.push("/books")}
                 >
                     Book List
                 </button>
