@@ -22,9 +22,9 @@ const CreateReview = () => {
             console.error("No ISBN found");
         }
 
-        const currentUser = AuthService.getCurrentUser();
-        if (currentUser) {
-            setUsername(currentUser.username);
+        const user = AuthService.getCurrentUser();
+        if (user) {
+            setUsername(user.username);
         } else {
             setUsername("Anonymous");
         }

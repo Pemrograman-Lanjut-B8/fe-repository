@@ -30,8 +30,8 @@ const Reviews = () => {
         };
 
         const fetchUser = () => {
-            const currentUser = AuthService.getCurrentUser();
-            setUser(currentUser?.username || null);
+            const user = AuthService.getCurrentUser();
+            setUser(user?.username || null);
         };
 
         fetchReviews();
