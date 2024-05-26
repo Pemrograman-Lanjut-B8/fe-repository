@@ -18,7 +18,7 @@ const LandingPage: React.FC = () => {
     useEffect(() => {
         const fetchBooks = async () => {
             try {
-                const response = await fetch('http://localhost:8090/api/book/recommendation');
+                const response = await fetch('http://34.124.134.197/api/book/recommendation');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
