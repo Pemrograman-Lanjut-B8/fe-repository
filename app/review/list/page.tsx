@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { Review } from '../types';
+import AuthService from '../../services/auth.service';
 
 const Reviews = () => {
     const [reviews, setReviews] = useState<Review[]>([]);
@@ -29,8 +30,8 @@ const Reviews = () => {
         };
 
         const fetchUser = () => {
-            const userData = localStorage.getItem("user");
-            setUser(userData);
+            const currentUser = AuthService.getCurrentUser();
+            setUser(currentUser?.username || null);
         };
 
         fetchReviews();
