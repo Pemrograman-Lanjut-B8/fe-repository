@@ -107,7 +107,7 @@ const Reviews = () => {
                                     <p><strong>Review:</strong> {review.review}</p>
                                     <p><strong>Rating:</strong> {review.rating}/10</p>
                                 </div>
-                                {user === review.username && (
+                                {/*{user === review.username && (*/}
                                     <div className="flex flex-col items-end justify-start w-1/4">
                                         <Link href={`/review/edit/${review.reviewId}`}>
                                             <a className="mb-2">
@@ -123,7 +123,7 @@ const Reviews = () => {
                                             </svg>
                                         </button>
                                     </div>
-                                )}
+                                {/*)}*/}
                             </div>
                         </div>
                     ))}
