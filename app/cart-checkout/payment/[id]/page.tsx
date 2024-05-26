@@ -2,7 +2,7 @@
 
 import { useRouter, useParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
-import { getCartCheckout, payCart, cancelCart } from '../../../../actions/cartService';
+import { getCartCheckout, payCart, storeCheckedOutBooks, cancelCart } from '@/actions/cartService';
 
 export interface CartItemsDTO {
     cartId: number;
@@ -46,7 +46,8 @@ const Page: React.FC = () => {
         if (id) {
             try {
                 const success = await payCart(Number(id));
-                if (success) {
+                if (success && cartCheckout) {
+                    await storeCheckedOutBooks(cartCheckout);
                     setStatus('Menunggu Pengiriman Buku');
                     alert('Payment successful!');
                 } else {
