@@ -31,7 +31,12 @@ class AuthService {
   }
 
   getCurrentUser() {
-    return JSON.parse(localStorage.getItem('user'));;
+    return JSON.parse(localStorage.getItem('user'));
+  }
+
+  isUserAuthorized(roles) {
+    const user = this.getCurrentUser();
+    return user && user.roles.some(role => roles.includes(role));
   }
 }
 
