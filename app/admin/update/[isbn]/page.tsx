@@ -1,14 +1,15 @@
-// app/createBook.tsx
+// app/UpdateBook.tsx
 'use client';
 
 import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import { addBook } from '@/actions/adminApi';
+import { addBook, updateBook } from '@/actions/adminApi';
 import { Book } from '@/types/book';
 import Navbar from '@/components/navbar/navbar';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import AuthService from '@/app/services/auth.service';
+import { getBookByIsbn } from '@/app/services/book.service';
 
-const CreateBook = () => {
+const UpdateBook = () => {
     const [bookData, setBookData] = useState<Book>({
         isbn: '',
         judulBuku: '',
@@ -25,21 +26,37 @@ const CreateBook = () => {
     });
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const [book, setBook] = useState<Book | null>(null);
+    const params = useParams()
+    const isbn = params.isbn as string;
 
     useEffect(() => {
-        const checkUserRole = () => {
-            try {
-                const currentUser = AuthService.getCurrentUser();
-                if (!currentUser || !currentUser.roles || !currentUser.roles.includes('ROLE_ADMIN')) {
-                    router.push('/');
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        checkUserRole();
+        if (isbn && typeof isbn === 'string') {
+            getBookDetails(isbn);
+            checkUserRole();
+        }
     }, []);
+
+    const getBookDetails = async (isbn: string) => {
+        try {
+            const bookData = await getBookByIsbn(isbn);
+            setBook(bookData);
+            setBookData(bookData); // Set bookData ke data buku yang diperoleh
+        } catch (error) {
+            console.error('Error fetching book details:', error);
+        }
+    };
+
+    const checkUserRole = () => {
+        try {
+            const currentUser = AuthService.getCurrentUser();
+            if (!currentUser || !currentUser.roles || !currentUser.roles.includes('ROLE_ADMIN')) {
+                router.push('/');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -64,13 +81,12 @@ const CreateBook = () => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            const response = await addBook(bookData);
-            alert('Book added successfully!');
-            console.log(response);
+            await updateBook(isbn, bookData); // Menggunakan updateBook untuk memperbarui buku
+            alert('Book updated successfully!');
             router.push('/admin/dashboard'); 
         } catch (error) {
-            alert('Failed to add book.');
-            setError('Failed to add book.');
+            alert('Failed to update book.');
+            setError('Failed to update book.');
             console.error(error);
         }
     };
@@ -131,7 +147,7 @@ const CreateBook = () => {
                 </div>
                 <div className="flex items-center justify-between">
                     <button className="bg-buku-blue-500 hover:bg-buku-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                        Add Book
+                        Update Book
                     </button>
                 </div>
             </form>
@@ -139,4 +155,4 @@ const CreateBook = () => {
     );
 };
 
-export default CreateBook;
+export default UpdateBook;

@@ -6,6 +6,7 @@ import { Book } from '@/types/book';
 import BookCard from '@/components/book-card/book_card';
 import Navbar from '@/components/navbar/navbar';
 import { useRouter } from 'next/navigation';
+import AuthService from '@/app/services/auth.service';
 
 const Dashboard = () => {
     const [books, setBooks] = useState<Book[]>([]);
@@ -26,6 +27,21 @@ const Dashboard = () => {
         };
 
         fetchBooks();
+    }, []);
+
+    useEffect(() => {
+        const checkUserRole = async () => {
+            try {
+                const currentUser = AuthService.getCurrentUser();
+                if (!currentUser || !currentUser.roles || !currentUser.roles.includes('ROLE_ADMIN')) {
+                    router.push('/');
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        checkUserRole();
     }, []);
 
     if (loading) {
