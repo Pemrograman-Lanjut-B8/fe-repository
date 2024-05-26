@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "~bootstrap/dist/css/bootstrap.min.css";
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 224, 247, 250; /* Light blue */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-rgb: 0, 35, 51; /* buku-blue-600 */
+  }
+}
+
+body {
+  font-family: "Lato", sans-serif;
+  background-color: rgb(var(--background-rgb));
+  color: rgb(var(--foreground-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: normal;
+  }
+
+  .container {
+    padding: 20px;
+    text-align: center;
+  }
+
+  .title {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #FFFAB7;
+  }
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    width: 200px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .card h2 {
+    color: #004d61; /* buku-blue-500 */
+  }
+
+  .card p {
+    color: #365486; /* buku-blue-200 */
+  }
+
+  .description {
+    font-size: 1.1em;
+    margin-bottom: 40px;
+    color: #004d61; /* buku-blue-500 */
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
