@@ -22,8 +22,8 @@ const EditReview = () => {
                     throw new Error('Network response was not OK!');
                 }
                 const data = await res.json();
-                setReview(data);
-                setRating(data);
+                setReview(data.review);
+                setRating(data.rating);
                 setBookIsbn(data.book.isbn);
                 setUsername(data.username);
             } catch (error) {
@@ -39,6 +39,10 @@ const EditReview = () => {
     const handleUpdateReview = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
+            console.log("Review:", review);
+            console.log("Rating:", rating);
+            console.log("Book ISBN:", bookIsbn);
+            console.log("Username:", username);
             const response = await fetch(`${baseURL}/api/review/edit/${reviewId}`, {
                 method: 'PUT',
                 headers: {
@@ -49,6 +53,8 @@ const EditReview = () => {
             if (!response.ok) {
                 throw new Error("Failed to update review!");
             }
+            const updatedReview = await response.json();
+            console.log("Updated Review: ", updatedReview);
             router.push('/review/list');
         } catch (error) {
             console.error("There was a problem while updating the review:", error);
