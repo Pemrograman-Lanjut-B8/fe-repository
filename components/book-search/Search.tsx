@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { PaginatedBooks } from '../types/book';
-import { searchBooks } from '../app/services/book.service';
+import { PaginatedBooks } from '../../types/book';
+import { searchBooks } from '../../app/services/book.service';
 
 interface SearchProps {
     onResults: (results: PaginatedBooks) => void;
@@ -13,10 +13,21 @@ const Search: React.FC<SearchProps> = ({ onResults }) => {
     const [sortDirection, setSortDirection] = useState('DESC');
     const [pageIndex, setPageIndex] = useState(1);
 
-    const handleSearch = async () => {
-        const results = await searchBooks(judulBuku, penulis, sortBy, sortDirection, pageIndex);
+    const handleSearchInternal = async (newPageIndex = pageIndex) => {
+        const results = await searchBooks(judulBuku, penulis, sortBy, sortDirection, newPageIndex);
         console.log('Search Results:', results);
         onResults(results);
+        setPageIndex(newPageIndex); // Update the page index state
+    };
+
+    const handleNextPage = () => {
+        handleSearchInternal(pageIndex + 1);
+    };
+
+    const handlePreviousPage = () => {
+        if (pageIndex > 1) {
+            handleSearchInternal(pageIndex - 1);
+        }
     };
 
     return (
@@ -44,7 +55,16 @@ const Search: React.FC<SearchProps> = ({ onResults }) => {
                 <option value="DESC">Descending</option>
                 <option value="ASC">Ascending</option>
             </select>
-            <button onClick={handleSearch} style={styles.button}>Search</button>
+            <button onClick={() => handleSearchInternal(1)} style={styles.button}>Search</button>
+            <div style={styles.pagination}>
+                <button onClick={handlePreviousPage} disabled={pageIndex <= 1} style={styles.button}>
+                    Previous
+                </button>
+                <span style={styles.pageInfo}>Page {pageIndex}</span>
+                <button onClick={handleNextPage} style={styles.button}>
+                    Next
+                </button>
+            </div>
         </div>
     );
 };
@@ -80,6 +100,16 @@ const styles = {
         backgroundColor: '#7FC7D9',
         color: '#fff',
         cursor: 'pointer',
+    },
+    pagination: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '20px',
+    },
+    pageInfo: {
+        margin: '0 10px',
+        color: '#0F1035',
     },
 };
 

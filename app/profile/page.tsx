@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Button, Card, Modal, Form, Alert, Spinner } from "react-bootstrap";
+import { useRouter } from 'next/navigation';
+import Navbar from '@/components/navbar/navbar';
 import UserService from "../services/user.service";
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Profile: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -11,6 +11,7 @@ const Profile: React.FC = () => {
   const [editableProfile, setEditableProfile] = useState<any>(null);
   const [editLoading, setEditLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
+  const router = useRouter();
 
   useEffect(() => {
     UserService.getProfile().then(
@@ -19,12 +20,7 @@ const Profile: React.FC = () => {
         setLoading(false);
       },
       error => {
-        const _profile =
-          (error.response && error.response.data) ||
-          error.message ||
-          error.toString();
-        setProfile(_profile);
-        setLoading(false);
+        router.push(`/login`);
       }
     );
   }, []);
@@ -39,7 +35,6 @@ const Profile: React.FC = () => {
     setMessage("");
 
     try {
-      // Call the API to save the changes
       await UserService.updateProfile(editableProfile);
       setProfile(editableProfile);
       setShowEditModal(false);
@@ -66,86 +61,160 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: '#DCF2F1' }}>
+    <div className="flex justify-center items-center h-screen bg-teal-100">
+      <Navbar />
       {loading ? (
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
+        <div className="flex justify-center items-center">
+          <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-teal-700 border-t-transparent rounded-full" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
       ) : (
-        <Card className="p-4" style={{ width: '500px', backgroundColor: '#7FC7D9', borderColor: '#365486' }}>
-          <Card.Img variant="top" src={profile.profilePicture || "//ssl.gstatic.com/accounts/ui/avatar_2x.png"} className="mb-4" />
-          <Card.Body>
-            <Card.Title style={{ color: "#0F1035" }}>{profile.username}</Card.Title>
-            <Card.Text style={{ color: "#0F1035" }}>
-              <strong>Full Name:</strong> {profile.fullName}<br />
-              <strong>Email:</strong> {profile.email}<br />
-              <strong>Phone Number:</strong> {profile.phoneNumber}<br />
-              <strong>Bio:</strong> {profile.bio}<br />
-              <strong>Gender:</strong> {profile.gender}<br />
-              {profile.birthDate && (
-                <><strong>Birth Date:</strong> {new Date(profile.birthDate).toLocaleDateString()}<br /></>
-              )}
-              <strong>Roles:</strong> {formatRoles(profile.roles)}<br />
-            </Card.Text>
-            <Button variant="primary" onClick={handleEdit} style={{ backgroundColor: "#365486", borderColor: "#365486" }}>Edit</Button>
-          </Card.Body>
-        </Card>
+        <div className="p-6 bg-teal-300 border border-blue-700 w-96 rounded-md shadow-md">
+          <div className="flex justify-center mb-4">
+            <img 
+              src={profile.profilePicture || "//ssl.gstatic.com/accounts/ui/avatar_2x.png"} 
+              className="mb-4 w-48 h-48 rounded-full" 
+              alt="Profile"
+            />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-blue-900 mb-2">{profile.username}</h2>
+            <p className="text-blue-900 mb-2"><strong>Full Name:</strong> {profile.fullName}</p>
+            <p className="text-blue-900 mb-2"><strong>Email:</strong> {profile.email}</p>
+            <p className="text-blue-900 mb-2"><strong>Phone Number:</strong> {profile.phoneNumber}</p>
+            <p className="text-blue-900 mb-2"><strong>Bio:</strong> {profile.bio}</p>
+            <p className="text-blue-900 mb-2"><strong>Gender:</strong> {profile.gender}</p>
+            {profile.birthDate && (
+              <p className="text-blue-900 mb-2"><strong>Birth Date:</strong> {new Date(profile.birthDate).toLocaleDateString()}</p>
+            )}
+            <p className="text-blue-900 mb-2"><strong>Roles:</strong> {formatRoles(profile.roles)}</p>
+            <button 
+              className="mt-4 px-4 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800" 
+              onClick={handleEdit}
+            >
+              Edit
+            </button>
+          </div>
+        </div>
       )}
 
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Profile</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {editableProfile && (
-            <Form>
-              <Form.Group className="mb-3">
-                <Form.Label>Full Name</Form.Label>
-                <Form.Control type="text" name="fullName" value={editableProfile.fullName} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Profile Picture URL</Form.Label>
-                <Form.Control type="text" name="profilePicture" value={editableProfile.profilePicture} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Email</Form.Label>
-                <Form.Control type="email" name="email" value={editableProfile.email} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Phone Number</Form.Label>
-                <Form.Control type="text" name="phoneNumber" value={editableProfile.phoneNumber} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Bio</Form.Label>
-                <Form.Control as="textarea" name="bio" value={editableProfile.bio} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Gender</Form.Label>
-                <Form.Control type="text" name="gender" value={editableProfile.gender} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Birth Date</Form.Label>
-                <Form.Control type="date" name="birthDate" value={editableProfile.birthDate ? new Date(editableProfile.birthDate).toISOString().split('T')[0] : ''} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Old Password</Form.Label>
-                <Form.Control type="password" name="oldPassword" value={editableProfile.oldPassword} onChange={handleChange} />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>New Password</Form.Label>
-                <Form.Control type="password" name="newPassword" value={editableProfile.newPassword} onChange={handleChange} />
-              </Form.Group>
-              {message && <Alert variant="danger">{message}</Alert>}
-            </Form>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>Close</Button>
-          <Button variant="primary" onClick={handleSave} style={{ backgroundColor: "#365486", borderColor: "#365486" }} disabled={editLoading}>
-            {editLoading ? "Saving..." : "Save Changes"}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {showEditModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-y-auto">
+          <div className="bg-white p-6 rounded-md shadow-md w-full max-w-md my-8 mx-auto">
+            <h2 className="text-xl font-bold mb-4">Edit Profile</h2>
+            {editableProfile && (
+              <form>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Full Name</label>
+                  <input 
+                    type="text" 
+                    name="fullName" 
+                    value={editableProfile.fullName} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full px-3 py-2 border rounded-md text-black"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Profile Picture URL</label>
+                  <input 
+                    type="text" 
+                    name="profilePicture" 
+                    value={editableProfile.profilePicture} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full px-3 py-2 border rounded-md text-black"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Email</label>
+                  <input 
+                    type="email" 
+                    name="email" 
+                    value={editableProfile.email} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full px-3 py-2 border rounded-md text-black"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Phone Number</label>
+                  <input 
+                    type="text" 
+                    name="phoneNumber" 
+                    value={editableProfile.phoneNumber} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full px-3 py-2 border rounded-md text-black"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Bio</label>
+                  <textarea 
+                    name="bio" 
+                    value={editableProfile.bio} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full px-3 py-2 border rounded-md text-black"
+                  ></textarea>
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Gender</label>
+                  <input 
+                    type="text" 
+                    name="gender" 
+                    value={editableProfile.gender} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full px-3 py-2 border rounded-md text-black"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Birth Date</label>
+                  <input 
+                    type="date" 
+                    name="birthDate" 
+                    value={editableProfile.birthDate ? new Date(editableProfile.birthDate).toISOString().split('T')[0] : ''} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full px-3 py-2 border rounded-md text-black"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Old Password</label>
+                  <input 
+                    type="password" 
+                    name="oldPassword" 
+                    value={editableProfile.oldPassword} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full px-3 py-2 border rounded-md text-black"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">New Password</label>
+                  <input 
+                    type="password" 
+                    name="newPassword" 
+                    value={editableProfile.newPassword} 
+                    onChange={handleChange} 
+                    className="mt-1 block w-full px-3 py-2 border rounded-md text-black"
+                  />
+                </div>
+                {message && <div className="text-red-500 text-sm mb-4">{message}</div>}
+              </form>
+            )}
+            <div className="flex justify-end">
+              <button 
+                className="mr-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400" 
+                onClick={() => setShowEditModal(false)}
+              >
+                Close
+              </button>
+              <button 
+                className="px-4 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800" 
+                onClick={handleSave}
+                disabled={editLoading}
+              >
+                {editLoading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
