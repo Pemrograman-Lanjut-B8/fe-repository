@@ -6,41 +6,52 @@ import { useRouter, useParams } from "next/navigation";
 
 const EditReview = () => {
     const router = useRouter();
-    const { id } = useParams();
+    const { reviewId } = useParams();
     const [review, setReview] = useState("");
-    const [rating, setRating] = useState(0);
-    const [bookIsbn, setBookIsbn] = useState("");
-    const [username, setUsername] = useState("");
+    const [rating, setRating] = useState<number>(0);
+    const [bookIsbn, setBookIsbn] = useState<string>("");
+    const [username, setUsername] = useState<string>("");
+
+    const baseURL = 'http://localhost:8080';
 
     useEffect(() => {
         const fetchReview = async () => {
-            const res = await fetch(`/api/review/${id}`);
-            const data = await res.json();
-            setReview(data.review);
-            setRating(data.rating);
-            setBookIsbn(data.book.isbn);
-            setUsername(data.username);
+            try {
+                const res = await fetch(`${baseURL}/api/review/${reviewId}`);
+                if (!res.ok) {
+                    throw new Error('Network response was not OK!');
+                }
+                const data = await res.json();
+                setReview(data.review);
+                setRating(data.rating);
+                setBookIsbn(data.book.isbn);
+                setUsername(data.username);
+            } catch (error) {
+                console.error('There was a problem fetching the review:', error);
+            }
         };
 
-        if (id) {
+        if (reviewId) {
             fetchReview();
         }
-    }, [id]);
+    }, [reviewId]);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleUpdateReview = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const res = await fetch(`/api/review/edit/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ review, rating, bookIsbn, username }),
-        });
-
-        if (res.ok) {
-            router.push("/review/list");
-        } else {
-            console.error("Error editing review");
+        try {
+            const response = await fetch(`${baseURL}/api/review/edit/${reviewId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ review, rating, bookIsbn, username })
+            });
+            if (!response.ok) {
+                throw new Error("Failed to update review!");
+            }
+            router.push('/review/list');
+        } catch (error) {
+            console.error("There was a problem while updating the review:", error);
         }
     };
 
@@ -49,8 +60,8 @@ const EditReview = () => {
             <Navbar />
             <div className="mt-20">
                 <h1 className="text-3xl font-semibold mb-4">Edit Review & Rating Books</h1>
-                <div>
-                    <form onSubmit={handleSubmit}>
+                {review !== "" ? (
+                    <form onSubmit={handleUpdateReview}>
                         <div>
                             <label>Review:</label>
                             <textarea
@@ -68,7 +79,9 @@ const EditReview = () => {
                         </div>
                         <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 focus:outline-none">Submit</button>
                     </form>
-                </div>
+                ) : (
+                    <p>Loading...</p>
+                )}
             </div>
         </div>
     );

@@ -1,21 +1,10 @@
 "use client";
 
-import Navbar from '@/components/navbar/navbar'
-import ReviewItem from '@/components/review-rating/review_rating';
+import Navbar from '@/components/navbar/navbar';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
-
-interface Review {
-    reviewId: string;
-    username: string;
-    book: {
-        judulBuku: string;
-    };
-    review: string;
-    rating: number;
-    dateTime: string;
-}
+import { Review } from '../types';
 
 const Reviews = () => {
     const [reviews, setReviews] = useState<Review[]>([]);
@@ -23,55 +12,23 @@ const Reviews = () => {
     const router = useRouter();
     const [sortedBy, setSortedBy] = useState<string>('recent');
 
+    const baseURL = 'http://localhost:8080';
+
     useEffect(() => {
         const fetchReviews = async () => {
-            // Simulate API call with dummy data
-            const data: Review[] = [
-                {
-                    reviewId: "1",
-                    username: "user1",
-                    book: { judulBuku: "Book Title 1" },
-                    review: "Great book!",
-                    rating: 9,
-                    dateTime: "2024-01-01T10:00:00Z",
-                },
-                {
-                    reviewId: "2",
-                    username: "user2",
-                    book: { judulBuku: "Book Title 2" },
-                    review: "Not bad.",
-                    rating: 7,
-                    dateTime: "2024-01-02T11:00:00Z",
-                },
-                {
-                    reviewId: "3",
-                    username: "user3",
-                    book: { judulBuku: "Book Title 3" },
-                    review: "Could be better.",
-                    rating: 5,
-                    dateTime: "2024-01-03T12:00:00Z",
-                },
-                {
-                    reviewId: "4",
-                    username: "user4",
-                    book: { judulBuku: "Book Title 4" },
-                    review: "Loved it!",
-                    rating: 10,
-                    dateTime: "2024-01-04T13:00:00Z",
-                },
-                {
-                    reviewId: "5",
-                    username: "user5",
-                    book: { judulBuku: "Book Title 5" },
-                    review: "Terrible.",
-                    rating: 2,
-                    dateTime: "2024-01-05T14:00:00Z",
-                },
-            ];
-            setReviews(data);
+            try {
+                const res = await fetch(`${baseURL}/api/review/list`);
+                if (!res.ok) {
+                    throw new Error('Failed to fetch reviews!');
+                }
+                const data: Review[] = await res.json();
+                setReviews(data);
+            } catch (error) {
+                console.error('There was a problem fetching the reviews:', error);
+            }
         };
 
-        const fetchUser = async () => {
+        const fetchUser = () => {
             const userData = localStorage.getItem("user");
             setUser(userData);
         };
@@ -81,8 +38,17 @@ const Reviews = () => {
     }, []);
 
     const deleteReview = async (id: string) => {
-        // Simulate delete API call
-        setReviews(reviews.filter((review) => review.reviewId !== id));
+        try {
+            const res = await fetch(`${baseURL}/api/review/delete/${id}`, {
+                method: 'DELETE',
+            });
+            if (!res.ok) {
+                throw new Error('Failed to delete review!');
+            }
+            setReviews(reviews.filter((review) => review.reviewId !== id));
+        } catch (error) {
+            console.error('There was a problem deleting the review:', error);
+        }
     };
 
     const sortReviews = async (sortBy: string) => {
