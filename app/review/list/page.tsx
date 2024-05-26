@@ -10,6 +10,7 @@ import AuthService from '../../services/auth.service';
 const Reviews = () => {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [user, setUser] = useState<string | null>(null);
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const router = useRouter();
     const [sortedBy, setSortedBy] = useState<string>('recent');
 
@@ -30,8 +31,9 @@ const Reviews = () => {
         };
 
         const fetchUser = () => {
-            const user = AuthService.getCurrentUser();
-            setUser(user?.username || null);
+            const currentUser = AuthService.getCurrentUser();
+            setUser(currentUser?.username || null);
+            setIsAdmin(currentUser?.roles.includes('ROLE_ADMIN') || false);
         };
 
         fetchReviews();
@@ -107,23 +109,23 @@ const Reviews = () => {
                                     <p><strong>Review:</strong> {review.review}</p>
                                     <p><strong>Rating:</strong> {review.rating}/10</p>
                                 </div>
-                                {/*{user === review.username && (*/}
-                                <div className="flex flex-col items-end justify-start w-1/4">
-                                    <Link href={`/review/edit/${review.reviewId}`}>
-                                        <a className="mb-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h8l4 4v8z" />
+                                {isAdmin && (
+                                    <div className="flex flex-col items-end justify-start w-1/4">
+                                        <Link href={`/review/edit/${review.reviewId}`}>
+                                            <a className="mb-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h8l4 4v8z" />
+                                                </svg>
+                                            </a>
+                                        </Link>
+                                        <button onClick={() => deleteReview(review.reviewId)}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                             </svg>
-                                        </a>
-                                    </Link>
-                                    <button onClick={() => deleteReview(review.reviewId)}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                {/*)}*/}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}
