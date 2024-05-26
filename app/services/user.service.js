@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authHeader from './auth-header';
 
-const API_URL = 'http://localhost:8080/api/profile';
+const API_URL = 'http://localhost:8081/api/profile';
 
 class UserService {
   getProfile() {
