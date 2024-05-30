@@ -17,11 +17,11 @@ const Navbar: React.FC = () => {
                         setRole('ROLE_USER');
                     } else if (currentUser.roles.includes('ROLE_ADMIN')) {
                         setRole('ROLE_ADMIN');
-                    } else {
+                    } else if (currentUser.roles.includes('ROLE_ADMIN')) {
+                        setRole(''); }
+                    else {
                         setRole(null);
                     }
-                } else {
-                    router.push('/login');
                 }
             } catch (error) {
                 console.error(error);
